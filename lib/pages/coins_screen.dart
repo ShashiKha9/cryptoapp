@@ -14,17 +14,13 @@ class CoinsScreenPage extends StatefulWidget{
 
 }
 class CoinsScreenPageState extends State<CoinsScreenPage>{
-  bool ? _isSearching;
-  String _searchText = "";
-  List searchresult = [];
-
 
   final channel =  IOWebSocketChannel.connect(
    "ws://prereg.ex.api.ampiy.com/prices",
 
   );
 
-priceData()  async {
+ priceData()  async {
     channel.sink.add(
         jsonEncode({
           "method": "SUBSCRIBE",
@@ -34,54 +30,30 @@ priceData()  async {
           "cid": 1
         }),
 
-
     );
 
-
-
-
-
   }
 
-
-  // void searchOperation(String searchText){
-  //   if(_isSearching != null){
-  //     for(int i=0;i<_list.length;i++){
-  //       String data = _list[i];
-  //       if(data.toLowerCase().contains(searchText.toLowerCase())){
-  //         searchresult.add(data);
-  //       }
+  // Icon searchicon = Icon(CupertinoIcons.search);
+  // final searchController= TextEditingController();
+  // void searchPressed(){
+  //   setState(() {
+  //     if(this.searchicon== CupertinoIcons.search){
+  //       this.searchicon== new Icon(CupertinoIcons.clear);
+  //       TextField(
+  //         controller: searchController,
+  //         decoration: InputDecoration(
+  //           hintText: "Search",
+  //           prefixIcon: Icon(CupertinoIcons.search)),
+  //         );
+  //
+  //     } else{
+  //       this.searchicon= Icon(CupertinoIcons.search);
+  //       Text("Enter text");
   //
   //     }
-  //
-  //   }
-  //
+  //   });
   // }
-
-
-
-
-
-  Icon searchicon = Icon(CupertinoIcons.search);
-  final searchController= TextEditingController();
-  void searchPressed(){
-    setState(() {
-      if(this.searchicon== CupertinoIcons.search){
-        this.searchicon== new Icon(CupertinoIcons.clear);
-        TextField(
-          controller: searchController,
-          decoration: InputDecoration(
-            hintText: "Search",
-            prefixIcon: Icon(CupertinoIcons.search)),
-          );
-
-      } else{
-        this.searchicon= Icon(CupertinoIcons.search);
-        Text("Enter text");
-
-      }
-    });
-  }
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -110,104 +82,89 @@ priceData()  async {
                // onChanged: searchOperation,
               ),
               ),
-              StreamBuilder(
+              StreamBuilder (
                 stream: channel.stream,
                   builder: (context,AsyncSnapshot<dynamic> snap) {
-                      return
-                         FutureBuilder<dynamic> (
-                              future: priceData(),
-                              builder: (context, AsyncSnapshot<dynamic>snapshot) {
-                                  return
-                                    Flexible(
-                                        child: ListView.separated(
-                                            separatorBuilder: (
-                                                BuildContext context,
-                                                int index) {
-                                              return Divider(
-                                                thickness: 2,
-                                              );
-                                            },
-                                            scrollDirection: Axis.vertical,
-                                            shrinkWrap: true,
-                                            itemCount: Priceticker
-                                                .fromJson(jsonDecode(snap.data))
-                                                .data
-                                                .length,
-                                            itemBuilder: (context,  index) {
-                                              return Container(
-                                                child: ListTile(
-                                                  leading: Image.network(
-                                                    "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency/128/Bitcoin-icon.png",
-                                                    width: 50,),
-                                                  title: Text(
-                                                    "BTC", style: TextStyle(
-                                                      fontWeight: FontWeight
-                                                          .w700),),
-                                                  subtitle: Text("Bitcoin"),
-                                                  trailing: Wrap(
-                                                    children: [
-                                                      Text("₹${Priceticker
-                                                          .fromJson(
-                                                          jsonDecode(snap.data))
-                                                          .data[index].c}",
-                                                        style: TextStyle(
-                                                            fontWeight: FontWeight
-                                                                .w500),),
-                                                      SizedBox(
-                                                        width: 20,
-                                                      ),
-                                                      Container(
-                                                          height: 28,
-                                                          width: 95,
-                                                          decoration: BoxDecoration(
-                                                              border: Border
-                                                                  .all(
-                                                                  color: Colors
-                                                                      .black12)
-                                                          ),
-                                                          child: Center(
-                                                            child: Text(
-                                                                "${Priceticker
-                                                                    .fromJson(
-                                                                    jsonDecode(
-                                                                        snap
-                                                                            .data))
-                                                                    .data[index]
-                                                                    .p
-                                                                    }%",
-                                                                style: TextStyle(
-                                                                    fontSize: 12,
-                                                                    color: Colors
-                                                                        .green)),
-                                                          )
-                                                      )
-
-                                                    ],
+                    return
+                       FutureBuilder<dynamic>(
+                          future: priceData(),
+                          builder: (context, AsyncSnapshot<dynamic>snapshot){
+                              return
+                                Flexible(
+                                    child: ListView.separated(
+                                        separatorBuilder: (BuildContext context,
+                                            int index) {
+                                          return Divider(
+                                            thickness: 2,
+                                          );
+                                        },
+                                        scrollDirection: Axis.vertical,
+                                        shrinkWrap: true,
+                                        itemCount:(snap.data==null)?0:Priceticker.fromJson(jsonDecode(snap.data)).data?.length??0,
+                                        itemBuilder: (context, index) {
+                                          return Container(
+                                            child: ListTile(
+                                              leading: Image.network(
+                                                "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency/128/Bitcoin-icon.png",
+                                                width: 50,),
+                                              title: Text(
+                                                "BTC", style: TextStyle(
+                                                  fontWeight: FontWeight
+                                                      .w700),),
+                                              subtitle: Text("Bitcoin"),
+                                              trailing: Wrap(
+                                                children: [
+                                                  Text("₹${Priceticker
+                                                      .fromJson(
+                                                      jsonDecode(snap.data))
+                                                      .data![index].c.toString()}",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight
+                                                            .w500),),
+                                                  SizedBox(
+                                                    width: 20,
                                                   ),
-                                                ),
+                                                  Container(
+                                                      height: 28,
+                                                      width: 95,
+                                                      decoration: BoxDecoration(
+                                                          border: Border
+                                                              .all(
+                                                              color: Colors
+                                                                  .black12)
+                                                      ),
+                                                      child: Center(
+                                                        child: Text(
+                                                            "${Priceticker
+                                                                .fromJson(
+                                                                jsonDecode(
+                                                                    snap
+                                                                        .data))
+                                                                .data![index]
+                                                                .p.toString()
+                                                            }%",
+                                                            style: TextStyle(
+                                                                fontSize: 12,
+                                                                color: Colors
+                                                                    .green)),
+                                                      )
+                                                  )
 
-                                              );
-                                            })
+                                                ],
+                                              ),
+                                            ),
 
-                                    );
-                                }
+                                          );
+                                        })
 
-
-
-
-
+                                );
 
 
-
-
-                        );
-                    }
-
-
+                          }
+                      );
+                  }
 
                   ),
-
-
 
             ],
           ),
@@ -215,7 +172,6 @@ priceData()  async {
     ));
 
   }
-
 
   @override
   void dispose(){

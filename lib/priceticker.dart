@@ -13,25 +13,27 @@ class Priceticker {
 }
 
   Priceticker.fromJson(dynamic json) {
-    _stream = json['stream'];
+    if(json['stream']!=null){
+      _stream = json['stream'];
+    }
     if (json['data'] != null) {
       _data = <Data>[];
       json['data'].forEach((v) {
-        data.add(new Data.fromJson(v));
+        data!.add(new Data.fromJson(v));
       });
     }
   }
   late String _stream;
-  late List<Data> _data;
+  List<Data>? _data;
 
   String get stream => _stream;
-  List<Data> get data => _data;
+  List<Data>? get data => _data;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     map['stream'] = _stream;
     if (_data != null) {
-      map['data'] = _data.map((v) => v.toJson()).toList();
+      map['data'] = _data!.map((v) => v.toJson()).toList();
     }
     return map;
   }
