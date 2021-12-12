@@ -4,7 +4,6 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
 
 import '../priceticker.dart';
@@ -15,14 +14,17 @@ class CoinsScreenPage extends StatefulWidget{
 
 }
 class CoinsScreenPageState extends State<CoinsScreenPage>{
-  int currentIndex=0;
+  bool ? _isSearching;
+  String _searchText = "";
+  List searchresult = [];
 
-   final channel =  IOWebSocketChannel.connect(
+
+  final channel =  IOWebSocketChannel.connect(
    "ws://prereg.ex.api.ampiy.com/prices",
 
   );
 
-  priceData()   {
+priceData()  async {
     channel.sink.add(
         jsonEncode({
           "method": "SUBSCRIBE",
@@ -34,15 +36,28 @@ class CoinsScreenPageState extends State<CoinsScreenPage>{
 
 
     );
-    // return Priceticker.fromJson(jsonDecode());
 
 
 
 
- // channel.stream.listen((priceData) {
- //      print(priceData);
- //      });
+
   }
+
+
+  // void searchOperation(String searchText){
+  //   if(_isSearching != null){
+  //     for(int i=0;i<_list.length;i++){
+  //       String data = _list[i];
+  //       if(data.toLowerCase().contains(searchText.toLowerCase())){
+  //         searchresult.add(data);
+  //       }
+  //
+  //     }
+  //
+  //   }
+  //
+  // }
+
 
 
 
@@ -71,81 +86,9 @@ class CoinsScreenPageState extends State<CoinsScreenPage>{
   Widget build(BuildContext context) {
     return SafeArea(
         child: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            currentIndex=0;
-          });
-    },
-
-    ),
-        bottomNavigationBar: BottomAppBar(
-        child: Container(
-        height: 65,
-        child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: [
-        FlatButton(onPressed: (){
-
-    },
-    padding: EdgeInsets.all(10.0),
-
-    child: Column(
-    children: [
-    Icon(Icons.home,color:  currentIndex == 0 ?Color(0xfffc0366): Colors.grey,),
-    Text("Home",style: TextStyle(color: currentIndex == 0 ?Color(0xfffc0366): Colors.grey,),)
-    ],
-    )),
-    FlatButton(onPressed: (){
-    setState(() {
-    currentIndex= 1;
-    });
-
-    },
-    padding: EdgeInsets.only(right: 14,top: 10),
-
-    child: Column(
-    children: [
-    Icon(CupertinoIcons.money_dollar_circle,color: currentIndex == 1 ?Color(0xfffc0366): Colors.grey,),
-    Text("Coins",style: TextStyle(color: currentIndex == 1 ?Color(0xfffc0366): Colors.grey,),)
-    ],
-    )),
-    FlatButton(onPressed: (){
-    setState(() {
-    currentIndex=2;
-    });
-    },
-
-    padding: EdgeInsets.only(left: 24,top: 10),
-    child: Column(
-    children: [
-    Icon(CupertinoIcons.rectangle_stack,color: currentIndex == 2 ?Color(0xfffc0366): Colors.grey,),
-    Text("Wallet",style: TextStyle(color: currentIndex == 2 ?Color(0xfffc0366): Colors.grey,),)
-    ],
-    )),
-    FlatButton(onPressed: (){
-    setState(() {
-    currentIndex= 3;
-    });
-    },
-    padding: EdgeInsets.all(10.0),
-
-    child: Column(
-    children: [
-    Icon(Icons.person,color: currentIndex == 3 ? Color(0xfffc0366): Colors.grey,),
-    Text("You",style: TextStyle(color: currentIndex == 3 ?Color(0xfffc0366): Colors.grey,),)
-    ],
-    )),
-
-    ],
-
-
-    ),
-    ),
-        ),
           resizeToAvoidBottomInset: false,
-          body: Column(
+          body:
+           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(padding: EdgeInsets.only(top: 20,left: 20,bottom: 3),
@@ -164,64 +107,105 @@ class CoinsScreenPageState extends State<CoinsScreenPage>{
                     borderSide: BorderSide(width: 1.0,color: Colors.black)
                   )
                 ),
+               // onChanged: searchOperation,
               ),
               ),
               StreamBuilder(
                 stream: channel.stream,
-                  builder: (context,AsyncSnapshot<dynamic> snap){
-                    return
-                      FutureBuilder(
-                      future: priceData(),
-                        builder: (context,AsyncSnapshot<dynamic>snapshot){
-                        return
-                        Flexible(
-                         child: ListView.separated(
-                              separatorBuilder: (BuildContext context,int index){
-                                return Divider(
-                                  thickness: 2,
-                                );
-                              },
-                              scrollDirection: Axis.vertical,
-                              shrinkWrap: true,
-                              itemCount: Priceticker.fromJson(jsonDecode(snap.data)).data.length,
-                              itemBuilder: (context,index){
-                                return Container(
-                                  child: ListTile(
-                                    leading: Image.network("https://icons.iconarchive.com/icons/cjdowner/cryptocurrency/128/Bitcoin-icon.png",
-                                      width: 50,),
-                                    title: Text("BTC",style: TextStyle(fontWeight: FontWeight.w700),),
-                                    subtitle: Text("Bitcoin"),
-                                    trailing: Wrap(
-                                      children: [
-                                        Text(Priceticker.fromJson(jsonDecode(snap.data)).data[index].c,style: TextStyle(fontWeight: FontWeight.w500),),
-                                        SizedBox(
-                                          width: 20,
-                                        ),
-                                        Container(
-                                            height: 28,
-                                            width: 55,
-                                            decoration: BoxDecoration(
-                                                border: Border.all(color: Colors.black12)
-                                            ),
-                                            child:Center(
-                                              child: Text("${Priceticker.fromJson(jsonDecode(snap.data)).data[index].p}%",style: TextStyle(fontSize: 12,color: Colors.green)),
-                                            )
-                                        )
+                  builder: (context,AsyncSnapshot<dynamic> snap) {
+                      return
+                         FutureBuilder<dynamic> (
+                              future: priceData(),
+                              builder: (context, AsyncSnapshot<dynamic>snapshot) {
+                                  return
+                                    Flexible(
+                                        child: ListView.separated(
+                                            separatorBuilder: (
+                                                BuildContext context,
+                                                int index) {
+                                              return Divider(
+                                                thickness: 2,
+                                              );
+                                            },
+                                            scrollDirection: Axis.vertical,
+                                            shrinkWrap: true,
+                                            itemCount: Priceticker
+                                                .fromJson(jsonDecode(snap.data))
+                                                .data
+                                                .length,
+                                            itemBuilder: (context,  index) {
+                                              return Container(
+                                                child: ListTile(
+                                                  leading: Image.network(
+                                                    "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency/128/Bitcoin-icon.png",
+                                                    width: 50,),
+                                                  title: Text(
+                                                    "BTC", style: TextStyle(
+                                                      fontWeight: FontWeight
+                                                          .w700),),
+                                                  subtitle: Text("Bitcoin"),
+                                                  trailing: Wrap(
+                                                    children: [
+                                                      Text("₹${Priceticker
+                                                          .fromJson(
+                                                          jsonDecode(snap.data))
+                                                          .data[index].c}",
+                                                        style: TextStyle(
+                                                            fontWeight: FontWeight
+                                                                .w500),),
+                                                      SizedBox(
+                                                        width: 20,
+                                                      ),
+                                                      Container(
+                                                          height: 28,
+                                                          width: 95,
+                                                          decoration: BoxDecoration(
+                                                              border: Border
+                                                                  .all(
+                                                                  color: Colors
+                                                                      .black12)
+                                                          ),
+                                                          child: Center(
+                                                            child: Text(
+                                                                "${Priceticker
+                                                                    .fromJson(
+                                                                    jsonDecode(
+                                                                        snap
+                                                                            .data))
+                                                                    .data[index]
+                                                                    .p
+                                                                    }%",
+                                                                style: TextStyle(
+                                                                    fontSize: 12,
+                                                                    color: Colors
+                                                                        .green)),
+                                                          )
+                                                      )
+
+                                                    ],
+                                                  ),
+                                                ),
+
+                                              );
+                                            })
+
+                                    );
+                                }
 
 
-                                      ],
-                                    ),
 
 
-                                  ),
 
-                                );
-                              })
+
+
+
+
                         );
+                    }
 
 
-                    });
-              }),
+
+                  ),
 
 
 
@@ -229,7 +213,6 @@ class CoinsScreenPageState extends State<CoinsScreenPage>{
           ),
 
     ));
-
 
   }
 

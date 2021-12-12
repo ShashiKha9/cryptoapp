@@ -13,7 +13,6 @@ class Priceticker {
 }
 
   Priceticker.fromJson(dynamic json) {
-    log('ashish_ak:'+json['stream']);
     _stream = json['stream'];
     if (json['data'] != null) {
       _data = <Data>[];
@@ -36,6 +35,7 @@ class Priceticker {
     }
     return map;
   }
+
 
 }
 
@@ -64,7 +64,6 @@ class Data {
     _t = t;
     _s = s;
     _p = p;
-    _p = p;
     _c = c;
     _o = o;
     _h = h;
@@ -77,7 +76,7 @@ class Data {
     _t = json['T'];
     _s = json['s'];
     _p = json['p'];
-    _p = json['P'];
+    // _P = json['P'];
     _c = json['c'];
     _o = json['o'];
     _h = json['h'];
@@ -110,7 +109,7 @@ class Data {
     map['T'] = _t;
     map['s'] = _s;
     map['p'] = _p;
-    map['P'] = _p;
+    // map['P'] = _p;
     map['c'] = _c;
     map['o'] = _o;
     map['h'] = _h;
