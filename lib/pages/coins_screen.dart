@@ -108,10 +108,11 @@ class CoinsScreenPageState extends State<CoinsScreenPage>{
                                                 "https://icons.iconarchive.com/icons/cjdowner/cryptocurrency/128/Bitcoin-icon.png",
                                                 width: 50,),
                                               title: Text(
-                                                "BTC", style: TextStyle(
+                                                Priceticker.fromJson(
+                                                  jsonDecode(snap.data))
+                                                .data![index].s.toString(), style: TextStyle(
                                                   fontWeight: FontWeight
                                                       .w700),),
-                                              subtitle: Text("Bitcoin"),
                                               trailing: Wrap(
                                                 children: [
                                                   Text("₹${Priceticker
