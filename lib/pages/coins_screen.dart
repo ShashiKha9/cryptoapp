@@ -17,8 +17,8 @@ class CoinsScreenPageState extends State<CoinsScreenPage>{
 
   final channel =  IOWebSocketChannel.connect(
    "ws://prereg.ex.api.ampiy.com/prices",
-
   );
+
 
  priceData()  async {
     channel.sink.add(
@@ -29,31 +29,10 @@ class CoinsScreenPageState extends State<CoinsScreenPage>{
           ],
           "cid": 1
         }),
-
     );
-
   }
 
-  // Icon searchicon = Icon(CupertinoIcons.search);
-  // final searchController= TextEditingController();
-  // void searchPressed(){
-  //   setState(() {
-  //     if(this.searchicon== CupertinoIcons.search){
-  //       this.searchicon== new Icon(CupertinoIcons.clear);
-  //       TextField(
-  //         controller: searchController,
-  //         decoration: InputDecoration(
-  //           hintText: "Search",
-  //           prefixIcon: Icon(CupertinoIcons.search)),
-  //         );
-  //
-  //     } else{
-  //       this.searchicon= Icon(CupertinoIcons.search);
-  //       Text("Enter text");
-  //
-  //     }
-  //   });
-  // }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -102,6 +81,7 @@ class CoinsScreenPageState extends State<CoinsScreenPage>{
                                         shrinkWrap: true,
                                         itemCount:(snap.data==null)?0:Priceticker.fromJson(jsonDecode(snap.data)).data?.length??0,
                                         itemBuilder: (context, index) {
+
                                           return Container(
                                             child: ListTile(
                                               leading: Image.network(
@@ -110,7 +90,7 @@ class CoinsScreenPageState extends State<CoinsScreenPage>{
                                               title: Text(
                                                 Priceticker.fromJson(
                                                   jsonDecode(snap.data))
-                                                .data![index].s.toString(), style: TextStyle(
+                                                .data![index].s.replaceAll("INR","" ).toString(), style: TextStyle(
                                                   fontWeight: FontWeight
                                                       .w700),),
                                               trailing: Wrap(
@@ -157,21 +137,14 @@ class CoinsScreenPageState extends State<CoinsScreenPage>{
 
                                           );
                                         })
-
                                 );
-
-
                           }
                       );
                   }
-
                   ),
-
             ],
           ),
-
     ));
-
   }
 
   @override
